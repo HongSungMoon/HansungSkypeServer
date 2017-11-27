@@ -15,12 +15,13 @@ public class Users {
 
 	public static void userInit() {
 
-		users.add(new UserInfo("È«¼º¹®"));
-		users.add(new UserInfo("ÀÌÀ±Àç"));
-		users.add(new UserInfo("¹é½ÂÈ¯"));
-		users.add(new UserInfo("ÀÌÅÂÀ±"));
-		users.add(new UserInfo("¹ÎÅÂ¼º"));
-		users.add(new UserInfo("ÃÖ¿ø±Õ"));
+		users.add(new UserInfo("aaa", "123", "È«¼º¹®", null));
+		users.add(new UserInfo("bbb", "123", "ÀÌÀ±Àç", null));
+		users.add(new UserInfo("ccc", "123", "¹é½ÂÈ¯", null));
+		users.add(new UserInfo("ddd", "123", "ÀÌÅÂÀ±", null));
+		users.add(new UserInfo("eee", "123", "¹ÎÅÂ¼º", null));
+		users.add(new UserInfo("fff", "123", "ÃÖ¿ø±Õ", null));
+
 
 	}
 	
