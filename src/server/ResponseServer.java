@@ -44,7 +44,7 @@ public class ResponseServer extends Thread {
 
 		loginUser = Users.loginRequest(id, ip);
 		if (loginUser == null)
-			close();
+			loginFail();
 		server.loginRequest(id);
 
 		while (true) {
@@ -64,6 +64,16 @@ public class ResponseServer extends Thread {
 
 		}
 
+	}
+
+	private void loginFail() {
+		try {
+			dataOutputStream.writeInt(Protocol.LOGIN_FAIL);
+			close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void loginRequest(String id) {
