@@ -11,6 +11,7 @@ public class UserInfo {
 	private String ip;
 	private String id;
 	private Vector<UserInfo> friends;
+	private String pw;
 	
 	public UserInfo(String name) {
 		this.name = name;
@@ -21,7 +22,10 @@ public class UserInfo {
 		friends = new Vector<UserInfo>();
 	}
 	
-	public UserInfo(String name, String image) {
+	public UserInfo(String id, String pw, String name, String image) {
+		friends = new Vector<UserInfo>();
+		this.id = id;
+		this.pw = pw;
 		this.name = name;
 		this.stateMessage = "";
 		this.image = image;

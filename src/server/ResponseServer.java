@@ -18,6 +18,7 @@ public class ResponseServer extends Thread {
 	private int protocal;
 	private String id;
 	private String ip;
+	private String pw;
 	private Vector<UserInfo> loginUser;
 	private Vector<Socket> loginClients;
 	private Server server;
@@ -34,7 +35,10 @@ public class ResponseServer extends Thread {
 		try {
 			dataInputStream = new DataInputStream(socket.getInputStream());
 			dataOutputStream = new DataOutputStream(socket.getOutputStream());
-			id = dataInputStream.readUTF();
+			String msg = dataInputStream.readUTF();
+			String loginInfo[] = msg.split(",");
+			id = loginInfo[0];
+			pw = loginInfo[1];
 		} catch (IOException e) {
 			debug.Debug.log("Data Input/Output Stream Init Error");
 		}
@@ -79,7 +83,16 @@ public class ResponseServer extends Thread {
 	public void loginRequest(String id) {
 		try {
 			dataOutputStream.writeInt(Protocol.LOGIN_SUCCESS);
-			dataOutputStream.writeUTF(id);
+			if(this.id.equals(id)) {
+				UserInfo user = Users.getUser(id);
+				String name = user.getName();
+				String stateMsg = user.getStateMessage();
+				String image = user.getImage();
+				String msg = name + "," + stateMsg + "," + image;
+				dataOutputStream.writeUTF(msg);
+			}
+			else
+				dataOutputStream.writeUTF(id);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
