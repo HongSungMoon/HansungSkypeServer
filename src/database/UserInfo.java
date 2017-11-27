@@ -1,8 +1,9 @@
-package server;
+package database;
 
+import java.io.Serializable;
 import java.util.Vector;
 
-public class UserInfo {
+public class UserInfo implements Serializable {
 	
 	private String name;
 	private String stateMessage;
@@ -12,6 +13,8 @@ public class UserInfo {
 	private String id;
 	private Vector<UserInfo> friends;
 	private String pw;
+	
+	public UserInfo( ) { 	}
 	
 	public UserInfo(String name) {
 		this.name = name;
@@ -27,7 +30,7 @@ public class UserInfo {
 		this.id = id;
 		this.pw = pw;
 		this.name = name;
-		this.stateMessage = "";
+		this.stateMessage = " ";
 		this.image = image;
 		connectionState = false;
 		ip = null;

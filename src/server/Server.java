@@ -13,7 +13,7 @@ import database.Users;
 
 public class Server extends Thread {
 
-	public static final String ServerIP = "172.0.0.1";
+	public static final String ServerIP = "127.0.0.1";
 	public static final int ServerPort = 9000;
 	public static Users users;
 
@@ -59,6 +59,23 @@ public class Server extends Thread {
 		for(int i=0; i<responseServers.size(); i++) {
 			responseServers.get(0).loginRequest(id);
 		}
+	}
+	
+	public void broadcastProtocol(int protocol, String msg) {
+		for(int i=0; i<responseServers.size(); i++) {
+			responseServers.get(0).broadcastProtocol(protocol, msg);
+		}
+	}
+
+	public void removeResponseServer(ResponseServer responseServer) {
+		for(int i=0; i<responseServers.size(); i++) {
+			if(responseServers.get(i).equals(responseServer))
+				responseServers.remove(i);
+		}
+	}
+	
+	public Users getUsers() {
+		return users;
 	}
 
 }
