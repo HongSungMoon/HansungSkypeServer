@@ -19,7 +19,6 @@ public class ResponseServer extends Thread {
 	private String id;
 	private String ip;
 	private Vector<UserInfo> loginUser;
-	private Vector<Socket> loginClients;
 	private Server server;
 
 	public ResponseServer(Socket socket, Server server) {
