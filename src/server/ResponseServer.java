@@ -3,7 +3,9 @@ package server;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Vector;
 
@@ -17,20 +19,19 @@ public class ResponseServer extends Thread {
 	private DataInputStream dataInputStream = null;
 	private DataOutputStream dataOutputStream = null;
 	private ObjectOutputStream objectOutputStream = null;
+	private ObjectInputStream objectInputStream = null;
 	private String buffer;
 	private int protocal;
 	private String id;
-	private String ip;
+	private InetAddress ip;
 	private String pw;
-	private Vector<UserInfo> users;
-	private Users usersClass;
+	private Vector<UserInfo> loginUsers;
 	private Server server;
 
 	public ResponseServer(Socket socket, Server server) {
 		this.socket = socket;
-		this.ip = socket.getInetAddress().toString();
+		this.ip = socket.getInetAddress();
 		this.server = server;
-		usersClass = server.getUsers();
 		streamInit();
 		debug.Debug.log("ID : " + id + " IP : " + ip + "  ResponseServer Create - Login");
 	}
@@ -40,6 +41,7 @@ public class ResponseServer extends Thread {
 			dataInputStream = new DataInputStream(socket.getInputStream());
 			dataOutputStream = new DataOutputStream(socket.getOutputStream());
 			objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+			objectInputStream = new ObjectInputStream(socket.getInputStream());
 			String msg = dataInputStream.readUTF();
 			String loginInfo[] = msg.split(",");
 			id = loginInfo[0];
@@ -51,8 +53,8 @@ public class ResponseServer extends Thread {
 
 	public void run() {
 
-		users = Server.users.loginRequest(id, ip);
-		if (users == null)
+		loginUsers = Server.users.loginRequest(id, ip);
+		if (loginUsers == null)
 			loginFail();
 		server.loginRequest(id);
 
@@ -64,12 +66,18 @@ public class ResponseServer extends Thread {
 				switch (protocal) {
 				case Protocol.CLIENT_LOGIN:
 					buffer = dataInputStream.readUTF();
+					InetAddress address = (InetAddress) objectInputStream.readObject();
+					UserInfo connectClient = getUser(buffer);
+					connectClient.setIp(address);
 					debug.Debug.log("ResponseServer : Client_Login  id : " + buffer);
 					break;
 				}
 			} catch (IOException e) {
 				close();
 				return;
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 
 		}
@@ -98,14 +106,19 @@ public class ResponseServer extends Thread {
 
 	public void loginRequest(String id) {
 		try {
-			dataOutputStream.writeInt(Protocol.LOGIN_SUCCESS);
 			if (this.id.equals(id)) {
-				UserInfo user = Server.users.getUser(id);
-				objectOutputStream.writeObject(user);
-				objectOutputStream.writeObject(users);
+				dataOutputStream.writeInt(Protocol.LOGIN_SUCCESS);
+				UserInfo connectClient = Server.users.getUser(id);
+				connectClient.setIp(ip);
+				objectOutputStream.writeObject(connectClient);
+				objectOutputStream.writeObject(Server.users.getUsers());
 				debug.Debug.log("ID : " + id + " IP : " + ip + "  LoginSuccess");
-			} else
-				dataOutputStream.writeUTF(id + "," + socket.getInetAddress().toString());
+			} else {
+				dataOutputStream.writeInt(Protocol.CLIENT_LOGIN);
+				dataOutputStream.writeUTF(id);
+				objectOutputStream.writeObject(ip);
+			}
+		
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -115,7 +128,7 @@ public class ResponseServer extends Thread {
 	public void close() {
 		try {
 			server.removeResponseServer(this);
-			//server.broadcastProtocol(Protocol.CLIENT_LOGOUT, id);
+			// server.broadcastProtocol(Protocol.CLIENT_LOGOUT, id);
 			socket.close();
 			dataInputStream.close();
 			dataOutputStream.close();
@@ -126,9 +139,23 @@ public class ResponseServer extends Thread {
 		}
 		this.interrupt();
 	}
-	
+
 	public void clientLogin(String id) {
-		usersClass.getUser(id).setConnectionState(true);
+		Server.users.getUser(id).setConnectionState(true);
+	}
+	
+	public UserInfo getUser(String id) {
+		for(int i=0; i<Server.users.getUsers().size(); i++) {
+			if(Server.users.getUsers().get(i).getId().equals(id))
+				return Server.users.getUsers().get(i);
+		}
+		return null;
+	}
+	
+	public void printVector() {
+		for (int i = 0; i < Server.users.getUsers().size(); i++) {
+			System.out.println(" " + i + " " + Server.users.getUsers().get(i).getId());
+		}
 	}
 
 }

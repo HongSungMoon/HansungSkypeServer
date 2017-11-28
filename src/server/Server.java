@@ -57,13 +57,13 @@ public class Server extends Thread {
 	
 	public void loginRequest(String id) {
 		for(int i=0; i<responseServers.size(); i++) {
-			responseServers.get(0).loginRequest(id);
+			responseServers.get(i).loginRequest(id);
 		}
 	}
 	
 	public void broadcastProtocol(int protocol, String msg) {
 		for(int i=0; i<responseServers.size(); i++) {
-			responseServers.get(0).broadcastProtocol(protocol, msg);
+			responseServers.get(i).broadcastProtocol(protocol, msg);
 		}
 	}
 

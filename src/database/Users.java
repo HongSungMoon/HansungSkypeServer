@@ -1,5 +1,6 @@
 package database;
 
+import java.net.InetAddress;
 import java.util.Vector;
 
 import database.UserInfo;
@@ -32,7 +33,7 @@ public class Users {
 
 	}
 	
-	synchronized public  Vector<UserInfo> loginRequest(String id, String ip) {
+	synchronized public  Vector<UserInfo> loginRequest(String id, InetAddress ip) {
 		UserInfo user = getUser(id);
 		if(user != null) {
 			user.setIp(ip);
@@ -61,8 +62,8 @@ public class Users {
 		return null;
 	}
 	
-	public void autoAddFriends() {
-		
+	public Vector<UserInfo> getUsers() {
+		return users;
 	}
 	
 }
