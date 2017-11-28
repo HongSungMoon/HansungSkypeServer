@@ -71,6 +71,9 @@ public class ResponseServer extends Thread {
 					connectClient.setIp(address);
 					debug.Debug.log("ResponseServer : Client_Login  id : " + buffer);
 					break;
+				case Protocol.CLIENT_LOGOUT:
+					close();
+					return;
 				}
 			} catch (IOException e) {
 				close();
@@ -128,7 +131,7 @@ public class ResponseServer extends Thread {
 	public void close() {
 		try {
 			server.removeResponseServer(this);
-			// server.broadcastProtocol(Protocol.CLIENT_LOGOUT, id);
+			server.broadcastProtocol(Protocol.CLIENT_LOGOUT, id);
 			socket.close();
 			dataInputStream.close();
 			dataOutputStream.close();
