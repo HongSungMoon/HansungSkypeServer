@@ -74,6 +74,18 @@ public class ResponseServer extends Thread {
 				case Protocol.CLIENT_LOGOUT:
 					close();
 					return;
+				case Protocol.MSG_REQUEST:
+					int roomId = dataInputStream.readInt();
+					String name = dataInputStream.readUTF();
+					String msg = dataInputStream.readUTF();
+					buffer = name + "/" + msg;
+					server.getChatRoom(roomId).requestMsg(buffer);
+					break;
+				case Protocol.CHAT_ROOM_REQUEST:
+					UserInfo user1 = (UserInfo) objectInputStream.readObject();
+					UserInfo user2 = (UserInfo) objectInputStream.readObject();
+					server.CreateChatRoom(user1, user2);
+					break;
 				}
 			} catch (IOException e) {
 				close();
@@ -87,6 +99,10 @@ public class ResponseServer extends Thread {
 
 	}
 
+	public Vector<UserInfo> getLoginUsers() {
+		return loginUsers;
+	}
+
 	private void loginFail() {
 		try {
 			dataOutputStream.writeInt(Protocol.LOGIN_FAIL);
@@ -96,6 +112,7 @@ public class ResponseServer extends Thread {
 			e.printStackTrace();
 		}
 	}
+	
 
 	public void broadcastProtocol(int protocol, String msg) {
 		try {
@@ -121,10 +138,9 @@ public class ResponseServer extends Thread {
 				dataOutputStream.writeUTF(id);
 				objectOutputStream.writeObject(ip);
 			}
-		
+
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			debug.Debug.log("ID : " + id + " IP : " + ip + "  LoginFail");
 		}
 	}
 
@@ -146,19 +162,33 @@ public class ResponseServer extends Thread {
 	public void clientLogin(String id) {
 		Server.users.getUser(id).setConnectionState(true);
 	}
-	
+
 	public UserInfo getUser(String id) {
-		for(int i=0; i<Server.users.getUsers().size(); i++) {
-			if(Server.users.getUsers().get(i).getId().equals(id))
+		for (int i = 0; i < Server.users.getUsers().size(); i++) {
+			if (Server.users.getUsers().get(i).getId().equals(id))
 				return Server.users.getUsers().get(i);
 		}
 		return null;
 	}
 	
+
 	public void printVector() {
 		for (int i = 0; i < Server.users.getUsers().size(); i++) {
 			System.out.println(" " + i + " " + Server.users.getUsers().get(i).getId());
 		}
+	}
+	
+	public boolean checkUser(String id) {
+		if(this.id.equals(id)) {
+			return true;
+		}
+		return false;
+	}
+	
+	public DataOutputStream getDataOutputStream() {
+	
+		return dataOutputStream;
+		
 	}
 
 }

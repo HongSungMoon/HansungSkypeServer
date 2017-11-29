@@ -1,6 +1,7 @@
 package server;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -9,6 +10,9 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.Vector;
 
+import chat.ChatRoom;
+import chat.ChatRoomManager;
+import database.UserInfo;
 import database.Users;
 
 public class Server extends Thread {
@@ -20,12 +24,14 @@ public class Server extends Thread {
 	private ServerSocket listener = null;
 	private Socket socket = null;
 	private DataInputStream dataInputStream = null;
-	private Vector<ResponseServer> responseServers;
+	private Vector<ResponseServer> responseServers = null;
+	private ChatRoomManager chatRoomManager = null;
 
 	public Server() {
 
 		users = new Users();
 		responseServers = new Vector<ResponseServer>();
+		chatRoomManager = new ChatRoomManager(this);
 		listenerInit();
 
 	}
@@ -76,6 +82,23 @@ public class Server extends Thread {
 	
 	public Users getUsers() {
 		return users;
+	}
+
+	public DataOutputStream getDataOutputStream(UserInfo user) {
+		String id = user.getId();
+		for(int i=0; i<responseServers.size(); i++) {
+			if(responseServers.get(i).checkUser(id))
+				return responseServers.get(i).getDataOutputStream();
+		}
+		return null;
+	}
+	
+	public ChatRoom getChatRoom(int roomId) {
+		return chatRoomManager.getChatRoom(roomId);
+	}
+	
+	public void CreateChatRoom(UserInfo user1, UserInfo user2) {
+		chatRoomManager.createChatRoom(user1, user2);
 	}
 
 }
