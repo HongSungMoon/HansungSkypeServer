@@ -7,8 +7,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.Vector;
 
+import chat.ChatRoom;
 import database.UserInfo;
 import database.Users;
 import protocol.Protocol;
@@ -21,12 +23,15 @@ public class ResponseServer extends Thread {
 	private ObjectOutputStream objectOutputStream = null;
 	private ObjectInputStream objectInputStream = null;
 	private String buffer;
-	private int protocal;
+	private int protocol;
 	private String id;
 	private InetAddress ip;
 	private String pw;
 	private Vector<UserInfo> loginUsers;
 	private Server server;
+
+	private String buffers[];
+	private String ids[];
 
 	public ResponseServer(Socket socket, Server server) {
 		this.socket = socket;
@@ -59,14 +64,16 @@ public class ResponseServer extends Thread {
 		server.loginRequest(id);
 
 		while (true) {
-
+			int roomId;
+			String buffers[];
 			try {
-				protocal = dataInputStream.readInt();
-
-				switch (protocal) {
+				protocol = dataInputStream.readInt();
+				debug.Debug.log("ResponseServer  id : " + id + "  Get : " + Integer.toString(protocol));
+				switch (protocol) {
 				case Protocol.CLIENT_LOGIN:
 					buffer = dataInputStream.readUTF();
 					InetAddress address = (InetAddress) objectInputStream.readObject();
+					objectInputStream.reset();
 					UserInfo connectClient = getUser(buffer);
 					connectClient.setIp(address);
 					debug.Debug.log("ResponseServer : Client_Login  id : " + buffer);
@@ -75,16 +82,42 @@ public class ResponseServer extends Thread {
 					close();
 					return;
 				case Protocol.MSG_REQUEST:
-					int roomId = dataInputStream.readInt();
-					String name = dataInputStream.readUTF();
-					String msg = dataInputStream.readUTF();
-					buffer = name + "/" + msg;
+					buffer = dataInputStream.readUTF();
+					debug.Debug.log("ResponseServer : MSG_REQUEST  buffer : " + buffer);
+					buffers = buffer.split("::::");
+					ids = buffers[2].split(",");
+					Arrays.sort(ids);
+					roomId = server.getRoomId(ids[0] + "," + ids[1]);
+					buffer = buffers[0] + "::::" + buffers[1] + "::::" + ids[0] + "," +ids[1] + "::::" + buffers[3];
 					server.getChatRoom(roomId).requestMsg(buffer);
 					break;
 				case Protocol.CHAT_ROOM_REQUEST:
-					UserInfo user1 = (UserInfo) objectInputStream.readObject();
-					UserInfo user2 = (UserInfo) objectInputStream.readObject();
+					buffer = dataInputStream.readUTF();
+					buffers = buffer.split("::::");
+					ids = buffers[1].split(",");
+					Arrays.sort(ids);
+					UserInfo user1 = getUser(ids[0]);
+					UserInfo user2 = getUser(ids[1]);
+					debug.Debug.log(buffer);
 					server.CreateChatRoom(user1, user2);
+					roomId = server.getRoomId(ids[0] + "," + ids[1]);
+					buffer = buffers[0] + "::::" + ids[0] + "," +ids[1] + "::::" + buffers[2];
+					String msg = Integer.toString(roomId) + "::::" + buffer;
+					debug.Debug.log(msg);
+					server.getChatRoom(roomId).createChatRoom(roomId, msg, ids[0] + "," + ids[1]);
+					break;
+				case Protocol.MSG_ADD_USER_REQUEST:
+					
+					break;
+				case Protocol.CONVERSATION_REQUEST:
+					String name = dataInputStream.readUTF();
+					Vector<ChatRoom> rooms = server.getConversationList(name);
+					for(int i=0; i<rooms.size(); i++) {
+						debug.Debug.log(rooms.get(i).getNames());
+					}
+					dataOutputStream.writeInt(Protocol.CONVERSATION_RESPONSE);
+					objectOutputStream.writeObject(rooms);
+					debug.Debug.log(rooms.toString());
 					break;
 				}
 			} catch (IOException e) {
@@ -112,7 +145,6 @@ public class ResponseServer extends Thread {
 			e.printStackTrace();
 		}
 	}
-	
 
 	public void broadcastProtocol(int protocol, String msg) {
 		try {
@@ -134,6 +166,7 @@ public class ResponseServer extends Thread {
 				objectOutputStream.writeObject(Server.users.getUsers());
 				debug.Debug.log("ID : " + id + " IP : " + ip + "  LoginSuccess");
 			} else {
+				debug.Debug.log("ID : " + id + "  ClientLogin");
 				dataOutputStream.writeInt(Protocol.CLIENT_LOGIN);
 				dataOutputStream.writeUTF(id);
 				objectOutputStream.writeObject(ip);
@@ -170,25 +203,24 @@ public class ResponseServer extends Thread {
 		}
 		return null;
 	}
-	
 
 	public void printVector() {
 		for (int i = 0; i < Server.users.getUsers().size(); i++) {
 			System.out.println(" " + i + " " + Server.users.getUsers().get(i).getId());
 		}
 	}
-	
+
 	public boolean checkUser(String id) {
-		if(this.id.equals(id)) {
+		if (this.id.equals(id)) {
 			return true;
 		}
 		return false;
 	}
-	
+
 	public DataOutputStream getDataOutputStream() {
-	
+
 		return dataOutputStream;
-		
+
 	}
 
 }
