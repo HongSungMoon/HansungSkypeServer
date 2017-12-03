@@ -33,8 +33,8 @@ public class Users {
 
 	}
 	
-	synchronized public  Vector<UserInfo> loginRequest(String id, InetAddress ip) {
-		UserInfo user = getUser(id);
+	synchronized public  Vector<UserInfo> loginRequest(String id, String pw, InetAddress ip) {
+		UserInfo user = getUser(id, pw);
 		if(user != null) {
 			user.setIp(ip);
 			user.setConnectionState(true);
@@ -44,10 +44,10 @@ public class Users {
 		return null;
 	}
 	
-	synchronized public UserInfo getUser(String id) {
+	synchronized public UserInfo getUser(String id, String pw) {
 		
 		for(int i=0; i<users.size(); i++) {
-			if(users.get(i).getId().equals(id)) 
+			if(users.get(i).getId().equals(id) && users.get(i).getPw().equals(pw)) 
 				return users.get(i);
 		}
 		return null;

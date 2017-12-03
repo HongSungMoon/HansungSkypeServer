@@ -38,7 +38,7 @@ public class ResponseServer extends Thread {
 		this.ip = socket.getInetAddress();
 		this.server = server;
 		streamInit();
-		debug.Debug.log("ID : " + id + " IP : " + ip + "  ResponseServer Create - Login");
+		debug.Debug.log("ID : " + id + "PW : " + pw + " IP : " + ip + "  ResponseServer Create - Login");
 	}
 
 	public void streamInit() {
@@ -58,10 +58,10 @@ public class ResponseServer extends Thread {
 
 	public void run() {
 
-		loginUsers = Server.users.loginRequest(id, ip);
+		loginUsers = Server.users.loginRequest(id, pw, ip);
 		if (loginUsers == null)
 			loginFail();
-		server.loginRequest(id);
+		server.loginRequest(id, pw);
 
 		while (true) {
 			int roomId;
@@ -83,13 +83,13 @@ public class ResponseServer extends Thread {
 					return;
 				case Protocol.MSG_REQUEST:
 					buffer = dataInputStream.readUTF();
-					debug.Debug.log("ResponseServer : MSG_REQUEST  buffer : " + buffer);
 					buffers = buffer.split("::::");
 					ids = buffers[2].split(",");
 					Arrays.sort(ids);
 					roomId = server.getRoomId(ids[0] + "," + ids[1]);
 					buffer = buffers[0] + "::::" + buffers[1] + "::::" + ids[0] + "," +ids[1] + "::::" + buffers[3];
 					server.getChatRoom(roomId).requestMsg(buffer);
+					debug.Debug.log("MSG_REQUEST buffer = " + buffer);
 					break;
 				case Protocol.CHAT_ROOM_REQUEST:
 					buffer = dataInputStream.readUTF();
@@ -98,7 +98,6 @@ public class ResponseServer extends Thread {
 					Arrays.sort(ids);
 					UserInfo user1 = getUser(ids[0]);
 					UserInfo user2 = getUser(ids[1]);
-					debug.Debug.log(buffer);
 					server.CreateChatRoom(user1, user2);
 					roomId = server.getRoomId(ids[0] + "," + ids[1]);
 					buffer = buffers[0] + "::::" + ids[0] + "," +ids[1] + "::::" + buffers[2];
@@ -156,15 +155,15 @@ public class ResponseServer extends Thread {
 		}
 	}
 
-	public void loginRequest(String id) {
+	public void loginRequest(String id, String pw) {
 		try {
-			if (this.id.equals(id)) {
+			if (this.id.equals(id) && this.pw.equals(pw)) {
 				dataOutputStream.writeInt(Protocol.LOGIN_SUCCESS);
-				UserInfo connectClient = Server.users.getUser(id);
+				UserInfo connectClient = Server.users.getUser(id, pw);
 				connectClient.setIp(ip);
 				objectOutputStream.writeObject(connectClient);
 				objectOutputStream.writeObject(Server.users.getUsers());
-				debug.Debug.log("ID : " + id + " IP : " + ip + "  LoginSuccess");
+				debug.Debug.log("ID : " + id + "PW : " + pw + " IP : " + ip + "  LoginSuccess");
 			} else {
 				debug.Debug.log("ID : " + id + "  ClientLogin");
 				dataOutputStream.writeInt(Protocol.CLIENT_LOGIN);
@@ -193,7 +192,7 @@ public class ResponseServer extends Thread {
 	}
 
 	public void clientLogin(String id) {
-		Server.users.getUser(id).setConnectionState(true);
+		Server.users.getUser(id, pw).setConnectionState(true);
 	}
 
 	public UserInfo getUser(String id) {

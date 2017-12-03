@@ -88,6 +88,16 @@ public class UserInfo implements Serializable {
 	public Vector<UserInfo> getFriends() {
 		return friends;
 	}
+
+	public String getPw() {
+		return pw;
+	}
+
+	public void setPw(String pw) {
+		this.pw = pw;
+	}
+	
+	
 	
 	
 }

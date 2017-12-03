@@ -62,6 +62,7 @@ public class ChatRoom implements Serializable {
 	public void createChatRoom(int roomId, String msg, String names) {
 		this.names = names;
 		String time = getTime();
+		debug.Debug.log("yunjae time = " + time);
 		msg = msg + "::::" + time;
 		chatMessages.add(msg);
 		debug.Debug.log("Createchatroom dataOutputStreams size = " + dataOutputStreams.size());
@@ -120,7 +121,7 @@ public class ChatRoom implements Serializable {
 	
 	public String getTime() {
 		long time = System.currentTimeMillis();
-		SimpleDateFormat dayTime = new SimpleDateFormat("HH:MM");
+		SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String str = dayTime.format(new Date(time));
 		return str;
 	}

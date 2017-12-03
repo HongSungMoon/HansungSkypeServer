@@ -18,7 +18,7 @@ import database.Users;
 public class Server extends Thread {
 
 	public static final String ServerIP = "127.0.0.1";
-	public static final int ServerPort = 9000;
+	public static final int ServerPort = 9999;
 	public static Users users;
 
 	private ServerSocket listener = null;
@@ -47,8 +47,8 @@ public class Server extends Thread {
 	}
 
 	public void run() {
-		
-		while(true) {
+
+		while (true) {
 			try {
 				socket = listener.accept();
 			} catch (IOException e) {
@@ -60,55 +60,59 @@ public class Server extends Thread {
 		}
 
 	}
-	
-	public void loginRequest(String id) {
-		for(int i=0; i<responseServers.size(); i++) {
-			responseServers.get(i).loginRequest(id);
-		}
-	}
-	
-	public void broadcastProtocol(int protocol, String msg) {
-		for(int i=0; i<responseServers.size(); i++) {
-			responseServers.get(i).broadcastProtocol(protocol, msg);
+
+	public void loginRequest(String id, String pw) {
+		for (int i = 0; i < responseServers.size(); i++) {
+			responseServers.get(i).loginRequest(id, pw);
 		}
 	}
 
-	public void removeResponseServer(ResponseServer responseServer) {
-		for(int i=0; i<responseServers.size(); i++) {
-			if(responseServers.get(i).equals(responseServer))
-				responseServers.remove(i);
+	public void broadcastProtocol(int protocol, String msg) {
+		for (int i = 0; i < responseServers.size(); i++) {
+			responseServers.get(i).broadcastProtocol(protocol, msg);
 		}
 	}
 	
+	public void removeResponseServer(ResponseServer responseServer) {
+		for (int i = 0; i < responseServers.size(); i++) {
+			if (responseServers.get(i).equals(responseServer))
+				responseServers.remove(i);
+		}
+	}
+
 	public Users getUsers() {
 		return users;
 	}
 
 	public DataOutputStream getDataOutputStream(UserInfo user) {
 		String id = user.getId();
-		for(int i=0; i<responseServers.size(); i++) {
-			if(responseServers.get(i).checkUser(id))
+		for (int i = 0; i < responseServers.size(); i++) {
+			if (responseServers.get(i).checkUser(id))
 				return responseServers.get(i).getDataOutputStream();
 		}
 		return null;
 	}
-	
+
 	public ChatRoom getChatRoom(int roomId) {
 		return chatRoomManager.getChatRoom(roomId);
 	}
-	
+
 	public void CreateChatRoom(UserInfo user1, UserInfo user2) {
 		chatRoomManager.createChatRoom(user1, user2);
 	}
-	
+
 	public void getUser(String id) {
-		
+
+	}
+
+	public void getUser(String id, String pw) {
+
 	}
 
 	public int getRoomId(String names) {
 		return chatRoomManager.getRoomId(names);
 	}
-	
+
 	public Vector<ChatRoom> getConversationList(String name) {
 		return chatRoomManager.getConversationList(name);
 	}
