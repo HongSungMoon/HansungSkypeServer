@@ -12,7 +12,7 @@ import database.UserInfo;
 import protocol.Protocol;
 
 public class ChatRoom implements Serializable {
-	
+
 	/**
 	 * 
 	 */
@@ -20,13 +20,14 @@ public class ChatRoom implements Serializable {
 	private int roomId;
 	private String names;
 	private Vector<String> chatMessages = null;
-	
+
 	private transient Vector<UserInfo> users = null;
 	private transient Vector<DataOutputStream> dataOutputStreams = null;
 	private transient Vector<Integer> latestReadMessageNums = null;
 	private transient DataOutputStream logoutState = null;
-	
-	public ChatRoom() {  };
+
+	public ChatRoom() {
+	};
 
 	public ChatRoom(int roomId, UserInfo user1, UserInfo user2) {
 		this.roomId = roomId;
@@ -81,7 +82,7 @@ public class ChatRoom implements Serializable {
 				}
 			}
 		}
-		//debug.Debug.log(chatMessages.toString());
+		// debug.Debug.log(chatMessages.toString());
 	}
 
 	public void requestMsg(String msg) {
@@ -89,18 +90,20 @@ public class ChatRoom implements Serializable {
 		msg = msg + "::::" + time;
 		chatMessages.add(msg);
 		for (int i = 0; i < users.size(); i++) {
-//			if (dataOutputStreams.get(i).equals(logoutState)) {
-//
-//			} else {
-				try {
+			// if (dataOutputStreams.get(i).equals(logoutState)) {
+			//
+			// } else {
+			try {
+				if (dataOutputStreams.get(i) != null) {
 					dataOutputStreams.get(i).writeInt(Protocol.MSG_RELAY);
 					dataOutputStreams.get(i).writeUTF(msg);
-				} catch (IOException e) {
-					debug.Debug.log(e.getMessage());
 				}
-//			}
+			} catch (IOException e) {
+				debug.Debug.log(e.getMessage());
+			}
+			// }
 		}
-		//debug.Debug.log(chatMessages.toString());
+		// debug.Debug.log(chatMessages.toString());
 	}
 
 	public void addUser(int roomId, String names) {
@@ -118,18 +121,18 @@ public class ChatRoom implements Serializable {
 			}
 		}
 	}
-	
+
 	public String getTime() {
 		long time = System.currentTimeMillis();
 		SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String str = dayTime.format(new Date(time));
 		return str;
 	}
-	
+
 	public String getNames() {
 		return names;
 	}
-	
+
 	public void setNames(String names) {
 		this.names = names;
 	}
