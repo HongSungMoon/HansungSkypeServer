@@ -103,18 +103,27 @@ public class ResponseServer extends Thread {
 				case Protocol.MSG_REQUEST:
 					buffer = dataInputStream.readUTF();
 					buffers = buffer.split("::::");
+
 					debug.Debug.log("MSG_REQUEST buffer = " + buffer);
 					ids = buffers[2].split(",");
 					Arrays.sort(ids);
-					roomId = server.getRoomId(ids[0] + "," + ids[1]);
-					buffer = buffers[0] + "::::" + buffers[1] + "::::" + ids[0] + "," + ids[1] + "::::" + buffers[3];
-					server.getChatRoom(roomId).requestMsg(buffer);
-					
+					String sumName = null;
+					for(int i=0; i<ids.length; i++) {
+						if(i == 0)
+							sumName = ids[i];
+						else
+							sumName = sumName + "," + ids[i];
+					}
+						roomId = server.getRoomId(sumName);
+						buffer = buffers[0] + "::::" + buffers[1] + "::::" + sumName + "::::"
+								+ buffers[3];
+						server.getChatRoom(roomId).requestMsg(buffer);
 					break;
 				case Protocol.CHAT_ROOM_REQUEST:
 					buffer = dataInputStream.readUTF();
 					buffers = buffer.split("::::");
 					ids = buffers[1].split(",");
+					System.out.println("ResponseServer Get CHAT_ROOM_REQUEST  names : " + buffers[1]);
 					Arrays.sort(ids);
 					if (ids.length == 2) {
 						UserInfo user1 = getUser(ids[0]);
@@ -125,8 +134,7 @@ public class ResponseServer extends Thread {
 						String msg = Integer.toString(roomId) + "::::" + buffer;
 						debug.Debug.log(msg);
 						server.getChatRoom(roomId).createChatRoom(roomId, msg, ids[0] + "," + ids[1]);
-					}
-					else if(ids.length == 3) {
+					} else if (ids.length == 3) {
 						UserInfo user1 = getUser(ids[0]);
 						UserInfo user2 = getUser(ids[1]);
 						UserInfo user3 = getUser(ids[2]);

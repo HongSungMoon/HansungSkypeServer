@@ -81,6 +81,7 @@ public class ChatRoom implements Serializable {
 		msg = msg + "::::" + time;
 		chatMessages.add(msg);
 		debug.Debug.log("Createchatroom dataOutputStreams size = " + dataOutputStreams.size());
+		debug.Debug.log("Createchatroom users size = " + users.size());
 		for (int i = 0; i < users.size(); i++) {
 			if (dataOutputStreams.get(i) == null) {
 
@@ -103,6 +104,7 @@ public class ChatRoom implements Serializable {
 		String time = getTime();
 		msg = msg + "::::" + time;
 		chatMessages.add(msg);
+		debug.Debug.log("requestMsg users size = " + users.size());
 		for (int i = 0; i < users.size(); i++) {
 			// if (dataOutputStreams.get(i).equals(logoutState)) {
 			//
