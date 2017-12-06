@@ -116,5 +116,9 @@ public class Server extends Thread {
 	public Vector<ChatRoom> getConversationList(String name) {
 		return chatRoomManager.getConversationList(name);
 	}
+	
+	public ChatRoomManager getChatRoomManager() {
+		return chatRoomManager;
+	}
 
 }

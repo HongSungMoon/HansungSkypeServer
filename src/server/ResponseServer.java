@@ -51,8 +51,7 @@ public class ResponseServer extends Thread {
 			String loginInfo[] = msg.split(",");
 			id = loginInfo[0];
 			pw = loginInfo[1];
-			Vector<ChatRoom> rooms = server.getConversationList(id);
-			objectOutputStream.writeObject(rooms);
+			
 		} catch (IOException e) {
 			debug.Debug.log("Data Input/Output Stream Init Error");
 		}
@@ -64,7 +63,22 @@ public class ResponseServer extends Thread {
 		if (loginUsers == null)
 			loginFail();
 		server.loginRequest(id, pw);
-
+		Vector<ChatRoom> temproom = server.getConversationList(id);
+		for(int i=0; i<temproom.size(); i++) {
+			server.getChatRoomManager().addChatRoomUser(temproom.get(i).getNames(), server.users.getUser(id, pw));
+			System.out.println(temproom.get(i).getNames());
+			System.out.println(temproom.get(i).getChatMessages().toString());
+		}
+		if(temproom != null) {
+			try {
+				dataOutputStream.writeInt(0);
+				objectOutputStream.writeObject(temproom);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
 		while (true) {
 			int roomId;
 			String buffers[];
@@ -79,6 +93,9 @@ public class ResponseServer extends Thread {
 					UserInfo connectClient = getUser(buffer);
 					connectClient.setIp(address);
 					debug.Debug.log("ResponseServer : Client_Login  id : " + buffer);
+					dataOutputStream.writeInt(0);
+					Vector<ChatRoom> temprooms = server.getConversationList(id);
+					objectOutputStream.writeObject(temprooms);
 					break;
 				case Protocol.CLIENT_LOGOUT:
 					close();
@@ -223,6 +240,14 @@ public class ResponseServer extends Thread {
 
 		return dataOutputStream;
 
+	}
+	
+	public UserInfo getLoginUser(String id) {
+		for(int i=0; i<loginUsers.size(); i++) {
+			if(loginUsers.get(i).getId().equals(id))
+				return loginUsers.get(i);
+		}
+		return null;
 	}
 
 }

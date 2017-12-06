@@ -52,22 +52,34 @@ public class ChatRoomManager {
 
 	public void addChatRoomUser(String mapIds, UserInfo user) {
 
+		int roomId = map.get(mapIds);
 		ChatRoom chatRoom = rooms.get(roomId);
 		chatRoom.addUser(user);
 		chatRoom.addDataOutputStream(server.getDataOutputStream(user));
 		chatRoom.addLatestReadMessageNums();
-		int roomId = map.get(mapIds);
-		map.remove(mapIds);
-		String names = mapIds + "," + user.getId();
-		String name[] = names.split(",");
-		Arrays.sort(name);
-		for (int i = 0; i < name.length; i++) {
-			if (i == 0)
-				names = name[i];
-			else
-				names = names + "," + name[i];
-		}
-		debug.Debug.log("new names : " + names);
+//		int roomId = map.get(mapIds);
+//		map.remove(mapIds);
+//		String names = mapIds + "," + user.getId();
+//		String name[] = names.split(",");
+//		Arrays.sort(name);
+//		for (int i = 0; i < name.length; i++) {
+//			if (i == 0)
+//				names = name[i];
+//			else
+//				names = names + "," + name[i];
+//		}
+//		debug.Debug.log("new names : " + names);
+//		map.put(mapIds, roomId);
+
+	}
+	
+	public void addLoginChatRoomUser(String mapIds, UserInfo user) {
+
+		ChatRoom chatRoom = rooms.get(roomId);
+		chatRoom.addUser(user);
+		chatRoom.addDataOutputStream(server.getDataOutputStream(user));
+		chatRoom.addLatestReadMessageNums();
+		debug.Debug.log("addLoginChatRoomUser  roomId : " + rooms.get(roomId) + "  id : " + user.getId());
 		map.put(mapIds, roomId);
 
 	}

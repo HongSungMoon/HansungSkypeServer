@@ -106,21 +106,13 @@ public class ChatRoom implements Serializable {
 		// debug.Debug.log(chatMessages.toString());
 	}
 
-	public void addUser(int roomId, String names) {
-		for (int i = 0; i < users.size(); i++) {
-			if (dataOutputStreams.get(i).equals(logoutState)) {
-
-			} else {
-				try {
-					dataOutputStreams.get(i).writeInt(Protocol.CHAT_ROOM_RESPONSE);
-					dataOutputStreams.get(i).writeInt(roomId);
-					dataOutputStreams.get(i).writeUTF(names);
-				} catch (IOException e) {
-					debug.Debug.log(e.getMessage());
-				}
-			}
-		}
-	}
+//	public void addUser(int roomId, String names) {
+//
+//		users.add(e)
+//		private transient Vector<DataOutputStream> dataOutputStreams = null;
+//		private transient Vector<Integer> latestReadMessageNums = null;
+//		private transient DataOutputStream logoutState = null;
+//	}
 
 	public String getTime() {
 		long time = System.currentTimeMillis();
