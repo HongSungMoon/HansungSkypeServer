@@ -12,14 +12,11 @@ public class Session {
 	private final int startPort = 9001;
 	private Vector<ResponseServer> audioUsers;
 	
-	MulticastSocket socket;
-	
 	public Session(UserInfo user1, UserInfo user2) {
 		users = new Vector<UserInfo>();
 		audioUsers = new Vector<ResponseServer>();
 		users.add(user1);
 		users.add(user2);
-		
 	}
 	
 	public void addUser(UserInfo user) {
@@ -33,5 +30,7 @@ public class Session {
 	public int getUsersCount() {
 		return users.size();
 	}
+	
+	
 
 }

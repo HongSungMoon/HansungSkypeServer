@@ -51,6 +51,8 @@ public class ResponseServer extends Thread {
 			String loginInfo[] = msg.split(",");
 			id = loginInfo[0];
 			pw = loginInfo[1];
+			Vector<ChatRoom> rooms = server.getConversationList(id);
+			objectOutputStream.writeObject(rooms);
 		} catch (IOException e) {
 			debug.Debug.log("Data Input/Output Stream Init Error");
 		}
