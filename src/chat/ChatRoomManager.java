@@ -26,6 +26,31 @@ public class ChatRoomManager {
 		map = new HashMap<String, Integer>();
 
 	}
+	
+	public void createChatRoom(UserInfo user1, UserInfo user2, UserInfo user3) {
+
+		ChatRoom chatRoom = new ChatRoom(roomId, user1, user2, user3);
+		chatRoom.addDataOutputStream(server.getDataOutputStream(user1));
+		chatRoom.addDataOutputStream(server.getDataOutputStream(user2));
+		chatRoom.addDataOutputStream(server.getDataOutputStream(user3));
+		chatRoom.addLatestReadMessageNums();
+		chatRoom.addLatestReadMessageNums();
+		chatRoom.addLatestReadMessageNums();
+		// chatRoom.notifyMadeRoom();
+		
+		String[] members = { user1.getId(), user2.getId(), user3.getId() };
+		Arrays.sort(members);
+		String member = members[0] + "," + members[1] + "," + members[2];
+		chatRoom.setNames(member);
+		map.put(member, roomId);
+		roomId++;
+		rooms.add(chatRoom);
+		for(int i=0; i<rooms.size(); i++) {
+			debug.Debug.log("rooms.get : " + i + " " + rooms.get(i).getNames());
+		}
+
+		debug.Debug.log("CreateChatRoom roomId : " + (roomId-1) + "  member : " + member);
+	}
 
 	public void createChatRoom(UserInfo user1, UserInfo user2) {
 

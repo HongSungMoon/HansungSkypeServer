@@ -51,7 +51,7 @@ public class ResponseServer extends Thread {
 			String loginInfo[] = msg.split(",");
 			id = loginInfo[0];
 			pw = loginInfo[1];
-			
+
 		} catch (IOException e) {
 			debug.Debug.log("Data Input/Output Stream Init Error");
 		}
@@ -64,12 +64,12 @@ public class ResponseServer extends Thread {
 			loginFail();
 		server.loginRequest(id, pw);
 		Vector<ChatRoom> temproom = server.getConversationList(id);
-		for(int i=0; i<temproom.size(); i++) {
+		for (int i = 0; i < temproom.size(); i++) {
 			server.getChatRoomManager().addChatRoomUser(temproom.get(i).getNames(), server.users.getUser(id, pw));
 			System.out.println(temproom.get(i).getNames());
 			System.out.println(temproom.get(i).getChatMessages().toString());
 		}
-		if(temproom != null) {
+		if (temproom != null) {
 			try {
 				dataOutputStream.writeInt(0);
 				objectOutputStream.writeObject(temproom);
@@ -77,7 +77,7 @@ public class ResponseServer extends Thread {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 		}
 		while (true) {
 			int roomId;
@@ -103,34 +103,49 @@ public class ResponseServer extends Thread {
 				case Protocol.MSG_REQUEST:
 					buffer = dataInputStream.readUTF();
 					buffers = buffer.split("::::");
+					debug.Debug.log("MSG_REQUEST buffer = " + buffer);
 					ids = buffers[2].split(",");
 					Arrays.sort(ids);
 					roomId = server.getRoomId(ids[0] + "," + ids[1]);
-					buffer = buffers[0] + "::::" + buffers[1] + "::::" + ids[0] + "," +ids[1] + "::::" + buffers[3];
+					buffer = buffers[0] + "::::" + buffers[1] + "::::" + ids[0] + "," + ids[1] + "::::" + buffers[3];
 					server.getChatRoom(roomId).requestMsg(buffer);
-					debug.Debug.log("MSG_REQUEST buffer = " + buffer);
+					
 					break;
 				case Protocol.CHAT_ROOM_REQUEST:
 					buffer = dataInputStream.readUTF();
 					buffers = buffer.split("::::");
 					ids = buffers[1].split(",");
 					Arrays.sort(ids);
-					UserInfo user1 = getUser(ids[0]);
-					UserInfo user2 = getUser(ids[1]);
-					server.CreateChatRoom(user1, user2);
-					roomId = server.getRoomId(ids[0] + "," + ids[1]);
-					buffer = buffers[0] + "::::" + ids[0] + "," +ids[1] + "::::" + buffers[2];
-					String msg = Integer.toString(roomId) + "::::" + buffer;
-					debug.Debug.log(msg);
-					server.getChatRoom(roomId).createChatRoom(roomId, msg, ids[0] + "," + ids[1]);
+					if (ids.length == 2) {
+						UserInfo user1 = getUser(ids[0]);
+						UserInfo user2 = getUser(ids[1]);
+						server.CreateChatRoom(user1, user2);
+						roomId = server.getRoomId(ids[0] + "," + ids[1]);
+						buffer = buffers[0] + "::::" + ids[0] + "," + ids[1] + "::::" + buffers[2];
+						String msg = Integer.toString(roomId) + "::::" + buffer;
+						debug.Debug.log(msg);
+						server.getChatRoom(roomId).createChatRoom(roomId, msg, ids[0] + "," + ids[1]);
+					}
+					else if(ids.length == 3) {
+						UserInfo user1 = getUser(ids[0]);
+						UserInfo user2 = getUser(ids[1]);
+						UserInfo user3 = getUser(ids[2]);
+						server.CreateChatRoom(user1, user2, user3);
+						roomId = server.getRoomId(ids[0] + "," + ids[1] + "," + ids[2]);
+						buffer = buffers[0] + "::::" + ids[0] + "," + ids[1] + "," + ids[2] + "::::" + buffers[2];
+						String msg = Integer.toString(roomId) + "::::" + buffer;
+						debug.Debug.log(msg);
+						server.getChatRoom(roomId).createChatRoom(roomId, msg, ids[0] + "," + ids[1] + "," + ids[2]);
+					}
+
 					break;
 				case Protocol.MSG_ADD_USER_REQUEST:
-					
+
 					break;
 				case Protocol.CONVERSATION_REQUEST:
 					String name = dataInputStream.readUTF();
 					Vector<ChatRoom> rooms = server.getConversationList(name);
-					for(int i=0; i<rooms.size(); i++) {
+					for (int i = 0; i < rooms.size(); i++) {
 						debug.Debug.log(rooms.get(i).getNames());
 						debug.Debug.log(rooms.get(i).getChatMessages().toString());
 					}
@@ -241,10 +256,10 @@ public class ResponseServer extends Thread {
 		return dataOutputStream;
 
 	}
-	
+
 	public UserInfo getLoginUser(String id) {
-		for(int i=0; i<loginUsers.size(); i++) {
-			if(loginUsers.get(i).getId().equals(id))
+		for (int i = 0; i < loginUsers.size(); i++) {
+			if (loginUsers.get(i).getId().equals(id))
 				return loginUsers.get(i);
 		}
 		return null;

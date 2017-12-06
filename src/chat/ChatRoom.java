@@ -41,6 +41,20 @@ public class ChatRoom implements Serializable {
 		users.add(user1);
 		users.add(user2);
 	}
+	
+	public ChatRoom(int roomId, UserInfo user1, UserInfo user2, UserInfo user3) {
+		this.roomId = roomId;
+		users = new Vector<UserInfo>();
+		dataOutputStreams = new Vector<DataOutputStream>();
+		latestReadMessageNums = new Vector<Integer>();
+		chatMessages = new Vector<String>();
+		String ids[] = { user1.getId(), user2.getId(), user3.getId() };
+		Arrays.sort(ids);
+		names = ids[0] + "," + ids[1] + "," + ids[2];
+		users.add(user1);
+		users.add(user2);
+		users.add(user3);
+	}
 
 	public void addUser(UserInfo user) {
 		users.add(user);

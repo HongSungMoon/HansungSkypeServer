@@ -100,6 +100,10 @@ public class Server extends Thread {
 	public void CreateChatRoom(UserInfo user1, UserInfo user2) {
 		chatRoomManager.createChatRoom(user1, user2);
 	}
+	
+	public void CreateChatRoom(UserInfo user1, UserInfo user2, UserInfo user3) {
+		chatRoomManager.createChatRoom(user1, user2, user3);
+	}
 
 	public void getUser(String id) {
 
