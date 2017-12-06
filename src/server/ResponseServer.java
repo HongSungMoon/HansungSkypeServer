@@ -113,6 +113,7 @@ public class ResponseServer extends Thread {
 					Vector<ChatRoom> rooms = server.getConversationList(name);
 					for(int i=0; i<rooms.size(); i++) {
 						debug.Debug.log(rooms.get(i).getNames());
+						debug.Debug.log(rooms.get(i).getChatMessages().toString());
 					}
 					dataOutputStream.writeInt(Protocol.CONVERSATION_RESPONSE);
 					objectOutputStream.writeObject(rooms);

@@ -140,5 +140,9 @@ public class ChatRoom implements Serializable {
 	public int getRoomId() {
 		return roomId;
 	}
+	
+	public Vector<String> getChatMessages() {
+		return chatMessages;
+	}
 
 }
