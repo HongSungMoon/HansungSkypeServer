@@ -27,10 +27,13 @@ public class Server extends Thread {
 	private Vector<ResponseServer> responseServers = null;
 	private ChatRoomManager chatRoomManager = null;
 
-	public Server() {
+	public Server() { 
 
 		users = new Users();
 		responseServers = new Vector<ResponseServer>();
+		
+		
+		
 		chatRoomManager = new ChatRoomManager(this);
 		listenerInit();
 
