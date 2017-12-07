@@ -16,12 +16,12 @@ public class Users {
 
 	public  void userInit() {
 		
-		users.add(new UserInfo("aaa", "123", "È«¼º¹®", " "));
-		users.add(new UserInfo("bbb", "123", "ÀÌÀ±Àç", " "));
-		users.add(new UserInfo("ccc", "123", "¹é½ÂÈ¯", " "));
-		users.add(new UserInfo("ddd", "123", "ÀÌÅÂÀ±", " "));
-		users.add(new UserInfo("eee", "123", "¹ÎÅÂ¼º", " "));
-		users.add(new UserInfo("fff", "123", "ÃÖ¿ø±Õ", " "));
+		users.add(new UserInfo("È«¼º¹®", "123", "È«¼º¹®", " "));
+		users.add(new UserInfo("ÀÌÀ±Àç", "123", "ÀÌÀ±Àç", " "));
+		users.add(new UserInfo("¹é½ÂÈ¯", "123", "¹é½ÂÈ¯", " "));
+		users.add(new UserInfo("ÀÌÅÂÀ±", "123", "ÀÌÅÂÀ±", " "));
+		users.add(new UserInfo("¹ÎÅÂ¼º", "123", "¹ÎÅÂ¼º", " "));
+		users.add(new UserInfo("ÃÖ¿ø±Õ", "123", "ÃÖ¿ø±Õ", " "));
 		
 		for(int i=0; i<users.size(); i++) {
 			for(int j=0; j<users.size(); j++) {
