@@ -82,19 +82,18 @@ public class ChatRoomManager {
 		chatRoom.addUser(user);
 		chatRoom.addDataOutputStream(server.getDataOutputStream(user));
 		chatRoom.addLatestReadMessageNums();
-//		int roomId = map.get(mapIds);
-//		map.remove(mapIds);
-//		String names = mapIds + "," + user.getId();
-//		String name[] = names.split(",");
-//		Arrays.sort(name);
-//		for (int i = 0; i < name.length; i++) {
-//			if (i == 0)
-//				names = name[i];
-//			else
-//				names = names + "," + name[i];
-//		}
-//		debug.Debug.log("new names : " + names);
-//		map.put(mapIds, roomId);
+		map.remove(mapIds);
+		String names = mapIds + "," + user.getId();
+		String name[] = names.split(",");
+		Arrays.sort(name);
+		for (int i = 0; i < name.length; i++) {
+			if (i == 0)
+				names = name[i];
+			else
+				names = names + "," + name[i];
+		}
+		debug.Debug.log("new names : " + names);
+		map.put(mapIds, roomId);
 
 	}
 	
