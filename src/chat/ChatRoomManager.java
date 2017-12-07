@@ -45,11 +45,11 @@ public class ChatRoomManager {
 		map.put(member, roomId);
 		roomId++;
 		rooms.add(chatRoom);
-		for(int i=0; i<rooms.size(); i++) {
-			debug.Debug.log("rooms.get : " + i + " " + rooms.get(i).getNames());
-		}
-
-		debug.Debug.log("CreateChatRoom roomId : " + (roomId-1) + "  member : " + member);
+//		for(int i=0; i<rooms.size(); i++) {
+//			debug.Debug.log("rooms.get : " + i + " " + rooms.get(i).getNames());
+//		}
+//
+//		debug.Debug.log("CreateChatRoom roomId : " + (roomId-1) + "  member : " + member);
 	}
 
 	public void createChatRoom(UserInfo user1, UserInfo user2) {
@@ -68,15 +68,16 @@ public class ChatRoomManager {
 		map.put(member, roomId);
 		roomId++;
 		rooms.add(chatRoom);
-		for(int i=0; i<rooms.size(); i++) {
-			debug.Debug.log("rooms.get : " + i + " " + rooms.get(i).getNames());
-		}
-
-		debug.Debug.log("CreateChatRoom roomId : " + (roomId-1) + "  member : " + member);
+//		for(int i=0; i<rooms.size(); i++) {
+//			debug.Debug.log("rooms.get : " + i + " " + rooms.get(i).getNames());
+//		}
+//
+//		debug.Debug.log("CreateChatRoom roomId : " + (roomId-1) + "  member : " + member);
 	}
 
 	public void addChatRoomUser(String mapIds, UserInfo user) {
 
+		debug.Debug.log("old names : " + mapIds + "   roomId : " + map.get(mapIds));
 		int roomId = map.get(mapIds);
 		ChatRoom chatRoom = rooms.get(roomId);
 		chatRoom.addUser(user);
@@ -92,9 +93,42 @@ public class ChatRoomManager {
 			else
 				names = names + "," + name[i];
 		}
-		debug.Debug.log("new names : " + names);
-		map.put(mapIds, roomId);
+		map.put(names, roomId);
+		debug.Debug.log("new names : " + names + "   roomId : " + map.get(names));
+		chatRoom.setNames(names);
+	}
+	
+	public void addChatRoomUser(String mapIds, UserInfo user, String inviteName) {
 
+		debug.Debug.log("old names : " + mapIds + "   roomId : " + map.get(mapIds));
+		int roomId = map.get(mapIds);
+		ChatRoom chatRoom = rooms.get(roomId);
+		chatRoom.addUser(user);
+		chatRoom.addDataOutputStream(server.getDataOutputStream(user));
+		chatRoom.addLatestReadMessageNums();
+		map.remove(mapIds);
+		String names = mapIds + "," + user.getId();
+		String name[] = names.split(",");
+		Arrays.sort(name);
+		for (int i = 0; i < name.length; i++) {
+			if (i == 0)
+				names = name[i];
+			else
+				names = names + "," + name[i];
+		}
+		map.put(names, roomId);
+		debug.Debug.log("new names : " + names + "   roomId : " + map.get(names));
+		chatRoom.setNames(names);
+		String msg = Integer.toString(roomId) + "::::" + inviteName + "::::" + names + "::::" + inviteName + "님께서 " + 
+		user.getId() + "님을 초대하였습니다";
+		chatRoom.addMultiUser(mapIds, names, msg);
+		try {
+			Thread.sleep(200);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		chatRoom.requestMsg(msg);
 	}
 	
 	public void addLoginChatRoomUser(String mapIds, UserInfo user) {

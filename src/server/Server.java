@@ -23,7 +23,7 @@ public class Server extends Thread {
 
 	private ServerSocket listener = null;
 	private Socket socket = null;
-	private DataInputStream dataInputStream = null;
+	
 	private Vector<ResponseServer> responseServers = null;
 	private ChatRoomManager chatRoomManager = null;
 
@@ -31,10 +31,6 @@ public class Server extends Thread {
 
 		users = new Users();
 		responseServers = new Vector<ResponseServer>();
-		
-		
-		
-		
 		chatRoomManager = new ChatRoomManager(this);
 		listenerInit();
 
@@ -108,10 +104,10 @@ public class Server extends Thread {
 	public void CreateChatRoom(UserInfo user1, UserInfo user2, UserInfo user3) {
 		chatRoomManager.createChatRoom(user1, user2, user3);
 	}
-
-	public void getUser(String id) {
-
-	}
+//
+//	public void getUser(String name) {
+//		for(int i=0; i<users.)
+//	}
 
 	public void getUser(String id, String pw) {
 
@@ -128,5 +124,5 @@ public class Server extends Thread {
 	public ChatRoomManager getChatRoomManager() {
 		return chatRoomManager;
 	}
-
+	
 }

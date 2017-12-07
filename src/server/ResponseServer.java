@@ -117,7 +117,8 @@ public class ResponseServer extends Thread {
 						roomId = server.getRoomId(sumName);
 						buffer = buffers[0] + "::::" + buffers[1] + "::::" + sumName + "::::"
 								+ buffers[3];
-						server.getChatRoom(roomId).requestMsg(buffer);
+						System.out.println();
+						server.getChatRoom(Integer.parseInt(buffers[0])).requestMsg(buffer);
 					break;
 				case Protocol.CHAT_ROOM_REQUEST:
 					buffer = dataInputStream.readUTF();
@@ -148,7 +149,11 @@ public class ResponseServer extends Thread {
 
 					break;
 				case Protocol.MSG_ADD_USER_REQUEST:
-
+					String members = dataInputStream.readUTF();
+					buffer = dataInputStream.readUTF();
+					debug.Debug.log("ResponseSerer  Get MSG_ADD_USER_REQUEST   members : " + members + "    id : " + id + "   targer : " + buffer);
+					String tmp = buffer;
+					server.getChatRoomManager().addChatRoomUser(members, getLoginUser(tmp), id);
 					break;
 				case Protocol.CONVERSATION_REQUEST:
 					String name = dataInputStream.readUTF();
@@ -159,8 +164,9 @@ public class ResponseServer extends Thread {
 					}
 					dataOutputStream.writeInt(Protocol.CONVERSATION_RESPONSE);
 					objectOutputStream.writeObject(rooms);
-					debug.Debug.log(rooms.toString());
+					//debug.Debug.log(rooms.toString());
 					break;
+
 				}
 			} catch (IOException e) {
 				close();

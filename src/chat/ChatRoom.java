@@ -77,7 +77,7 @@ public class ChatRoom implements Serializable {
 	public void createChatRoom(int roomId, String msg, String names) {
 		this.names = names;
 		String time = getTime();
-		debug.Debug.log("yunjae time = " + time);
+		//debug.Debug.log("yunjae time = " + time);
 		msg = msg + "::::" + time;
 		chatMessages.add(msg);
 		debug.Debug.log("Createchatroom dataOutputStreams size = " + dataOutputStreams.size());
@@ -113,22 +113,57 @@ public class ChatRoom implements Serializable {
 				if (dataOutputStreams.get(i) != null) {
 					dataOutputStreams.get(i).writeInt(Protocol.MSG_RELAY);
 					dataOutputStreams.get(i).writeUTF(msg);
+					debug.Debug.log(users.get(i).getId() + " 에게 Protocol.MSG_RELAY");
 				}
 			} catch (IOException e) {
 				debug.Debug.log(e.getMessage());
 			}
-			// }
 		}
-		// debug.Debug.log(chatMessages.toString());
+	}
+	
+	public void addUser(String msg) {
+		String time = getTime();
+		msg = msg + "::::" + time;
+		chatMessages.add(msg);
+		debug.Debug.log("requestMsg users size = " + users.size());
+		for (int i = 0; i < users.size(); i++) {
+			// if (dataOutputStreams.get(i).equals(logoutState)) {
+			//
+			// } else {
+			try {
+				if (dataOutputStreams.get(i) != null) {
+					dataOutputStreams.get(i).writeInt(Protocol.MSG_RELAY);
+					dataOutputStreams.get(i).writeUTF(msg);
+					debug.Debug.log(users.get(i).getId() + " 에게 Protocol.MSG_ADD_USER_RESPONSE");
+				}
+			} catch (IOException e) {
+				debug.Debug.log(e.getMessage());
+			}
+		}
+	}
+	
+	public void addMultiUser(String oldNames, String newNames, String msg) {
+		String time = getTime();
+		msg = msg + "::::" + time;
+		chatMessages.add(msg);
+		debug.Debug.log("requestMsg users size = " + users.size());
+		debug.Debug.log("requestMsg dataOutputStreams size = " + dataOutputStreams.size());
+		for (int i = 0; i < users.size(); i++) {
+			// if (dataOutputStreams.get(i).equals(logoutState)) {
+			//
+			// } else {
+			try {
+				if (dataOutputStreams.get(i) != null) {
+					dataOutputStreams.get(i).writeInt(Protocol.MSG_ADD_USER_RESPONSE);
+					dataOutputStreams.get(i).writeUTF(oldNames + "::::" + newNames);
+					debug.Debug.log(users.get(i).getId() + " 에게 Protocol.MSG_ADD_USER_RESPONSE");
+				}
+			} catch (IOException e) {
+				debug.Debug.log(e.getMessage());
+			}
+		}
 	}
 
-//	public void addUser(int roomId, String names) {
-//
-//		users.add(e)
-//		private transient Vector<DataOutputStream> dataOutputStreams = null;
-//		private transient Vector<Integer> latestReadMessageNums = null;
-//		private transient DataOutputStream logoutState = null;
-//	}
 
 	public String getTime() {
 		long time = System.currentTimeMillis();
