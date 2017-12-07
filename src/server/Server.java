@@ -34,6 +34,7 @@ public class Server extends Thread {
 		
 		
 		
+		
 		chatRoomManager = new ChatRoomManager(this);
 		listenerInit();
 
