@@ -84,7 +84,9 @@ public class ChatRoomManager {
 		chatRoom.addDataOutputStream(server.getDataOutputStream(user));
 		chatRoom.addLatestReadMessageNums();
 		map.remove(mapIds);
-		String names = mapIds + "," + user.getId();
+		String names = mapIds;
+		if(!names.contains(user.getId()))
+		names = names + "," + user.getId();
 		String name[] = names.split(",");
 		Arrays.sort(name);
 		for (int i = 0; i < name.length; i++) {
@@ -99,7 +101,7 @@ public class ChatRoomManager {
 	}
 	
 	public void addChatRoomUser(String mapIds, UserInfo user, String inviteName) {
-
+		
 		debug.Debug.log("old names : " + mapIds + "   roomId : " + map.get(mapIds));
 		int roomId = map.get(mapIds);
 		ChatRoom chatRoom = rooms.get(roomId);
@@ -107,7 +109,10 @@ public class ChatRoomManager {
 		chatRoom.addDataOutputStream(server.getDataOutputStream(user));
 		chatRoom.addLatestReadMessageNums();
 		map.remove(mapIds);
-		String names = mapIds + "," + user.getId();
+		
+		String names = mapIds;
+		if(!mapIds.contains(user.getId()))
+			names = names + "," + user.getId();
 		String name[] = names.split(",");
 		Arrays.sort(name);
 		for (int i = 0; i < name.length; i++) {

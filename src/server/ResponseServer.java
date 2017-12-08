@@ -75,6 +75,7 @@ public class ResponseServer extends Thread {
 		Vector<ChatRoom> temproom = server.getConversationList(id);
 		for (int i = 0; i < temproom.size(); i++) {
 			server.getChatRoomManager().addChatRoomUser(temproom.get(i).getNames(), server.users.getUser(id, pw));
+//			server.getChatRoomManager().addLoginChatRoomUser(temproom.get(i).getNames(), server.users.getUser(id, pw));
 			System.out.println(temproom.get(i).getNames());
 			System.out.println(temproom.get(i).getChatMessages().toString());
 		}
