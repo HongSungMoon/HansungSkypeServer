@@ -14,6 +14,7 @@ import chat.ChatRoom;
 import database.UserInfo;
 import database.Users;
 import protocol.Protocol;
+import session.Session;
 
 public class ResponseServer extends Thread {
 
@@ -178,11 +179,10 @@ public class ResponseServer extends Thread {
 					break;
 				case Protocol.CALL_REQUEST:
 					String partner = dataInputStream.readUTF();
-					ResponseServer partnerResponseServer = server.getResponseServer(partner);
-					if(partnerResponseServer != null) {
-//						server
-						
-					}
+					ResponseServer requestServer = server.getResponseServer(id);
+					ResponseServer partnerServer = server.getResponseServer(partner);
+					if(requestServer != null && partnerServer != null)
+						server.addSession(new Session(server, requestServer, partnerServer));
 					break;
 				}
 			} catch (IOException e) {

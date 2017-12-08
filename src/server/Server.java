@@ -117,7 +117,7 @@ public class Server extends Thread {
 	}
 
 	public void addSession(ResponseServer user1, ResponseServer user2) {
-		Session session = new Session(user1, user2);
+		Session session = new Session(this, user1, user2);
 		sessions.add(session);
 	}
 	
@@ -135,6 +135,17 @@ public class Server extends Thread {
 	
 	public ChatRoomManager getChatRoomManager() {
 		return chatRoomManager;
+	}
+	
+	public void addSession(Session session) {
+		sessions.add(session);
+	}
+	
+	public void removeSession(Session session) {
+		for(int i=0; i<sessions.size(); i++) {
+			if(sessions.get(i).equals(session))
+				sessions.remove(i);
+		}
 	}
 	
 }
