@@ -14,6 +14,7 @@ import chat.ChatRoom;
 import chat.ChatRoomManager;
 import database.UserInfo;
 import database.Users;
+import session.Session;
 
 public class Server extends Thread {
 
@@ -26,12 +27,14 @@ public class Server extends Thread {
 	
 	private Vector<ResponseServer> responseServers = null;
 	private ChatRoomManager chatRoomManager = null;
+	private Vector<Session> sessions = null;
 
 	public Server() { 
 
 		users = new Users();
 		responseServers = new Vector<ResponseServer>();
 		chatRoomManager = new ChatRoomManager(this);
+		sessions = new Vector<Session>();
 		listenerInit();
 
 	}
@@ -83,6 +86,14 @@ public class Server extends Thread {
 	public Users getUsers() {
 		return users;
 	}
+	
+	public ResponseServer getResponseServer(String id) {
+		for(int i=0; i<responseServers.size(); i++) {
+			if(responseServers.get(i).getUserId().equals(id))
+				return responseServers.get(i);
+		}
+		return null;
+	}
 
 	public DataOutputStream getDataOutputStream(UserInfo user) {
 		String id = user.getId();
@@ -104,11 +115,12 @@ public class Server extends Thread {
 	public void CreateChatRoom(UserInfo user1, UserInfo user2, UserInfo user3) {
 		chatRoomManager.createChatRoom(user1, user2, user3);
 	}
-//
-//	public void getUser(String name) {
-//		for(int i=0; i<users.)
-//	}
 
+	public void addSession(ResponseServer user1, ResponseServer user2) {
+		Session session = new Session(user1, user2);
+		sessions.add(session);
+	}
+	
 	public void getUser(String id, String pw) {
 
 	}

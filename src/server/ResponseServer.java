@@ -40,6 +40,15 @@ public class ResponseServer extends Thread {
 		streamInit();
 		debug.Debug.log("ID : " + id + "PW : " + pw + " IP : " + ip + "  ResponseServer Create - Login");
 	}
+	
+	
+	public String getUserId() {
+		return this.id;
+	}
+	
+	public InetAddress getUserAddress() {
+		return this.ip;
+	}
 
 	public void streamInit() {
 		try {
@@ -166,7 +175,14 @@ public class ResponseServer extends Thread {
 					objectOutputStream.writeObject(rooms);
 					//debug.Debug.log(rooms.toString());
 					break;
-
+				case Protocol.CALL_REQUEST:
+					String partner = dataInputStream.readUTF();
+					ResponseServer partnerResponseServer = server.getResponseServer(partner);
+					if(partnerResponseServer != null) {
+//						server
+						
+					}
+					break;
 				}
 			} catch (IOException e) {
 				close();
@@ -277,6 +293,33 @@ public class ResponseServer extends Thread {
 				return loginUsers.get(i);
 		}
 		return null;
+	}
+	
+	public void dataOutputStreamWriteInt(int x){
+		try {
+			dataOutputStream.writeInt(x);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+	}
+	
+	public void objectOutputStreamWriteInt(InetAddress inetAddress){
+		try {
+			objectOutputStream.writeObject(inetAddress);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+	}
+	
+	public void dataOutputStreamWriteUTF(String msg){
+		try {
+			dataOutputStream.writeUTF(msg);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
 	}
 
 }
