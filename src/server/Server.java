@@ -15,6 +15,8 @@ import chat.ChatRoomManager;
 import database.UserInfo;
 import database.Users;
 import session.Session;
+import sns.SNS;
+import sns.SNSManager;
 
 public class Server extends Thread {
 
@@ -28,6 +30,7 @@ public class Server extends Thread {
 	private Vector<ResponseServer> responseServers = null;
 	private ChatRoomManager chatRoomManager = null;
 	private Vector<Session> sessions = null;
+	private SNSManager snsManager = null;
 
 	public Server() { 
 
@@ -35,6 +38,7 @@ public class Server extends Thread {
 		responseServers = new Vector<ResponseServer>();
 		chatRoomManager = new ChatRoomManager(this);
 		sessions = new Vector<Session>();
+		snsManager = new SNSManager(this);
 		listenerInit();
 
 	}
@@ -73,6 +77,14 @@ public class Server extends Thread {
 	public void broadcastProtocol(int protocol, String msg) {
 		for (int i = 0; i < responseServers.size(); i++) {
 			responseServers.get(i).broadcastProtocol(protocol, msg);
+		}
+	}
+	
+	public void SNSbroadcastProtocol(int protocol) {
+		for(int i=0; i<responseServers.size(); i++) {
+			debug.Debug.log("receiveServer size : " + getListSNS().size() );
+//			responseServers.get(i).SNSbroadcastProtocol(protocol, getListSNS());
+			responseServers.get(i).SNSbroadcastProtocol(protocol);
 		}
 	}
 	
@@ -146,6 +158,13 @@ public class Server extends Thread {
 			if(sessions.get(i).equals(session))
 				sessions.remove(i);
 		}
+	}
+	
+	public SNSManager getSNSManager() {
+		return snsManager;
+	}
+	public Vector<SNS> getListSNS() {
+		return snsManager.getSNS();
 	}
 	
 }

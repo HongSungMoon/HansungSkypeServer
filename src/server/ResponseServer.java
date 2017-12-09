@@ -15,6 +15,7 @@ import database.UserInfo;
 import database.Users;
 import protocol.Protocol;
 import session.Session;
+import sns.SNS;
 
 public class ResponseServer extends Thread {
 
@@ -90,6 +91,19 @@ public class ResponseServer extends Thread {
 			}
 
 		}
+		Vector<SNS> snss = server.getListSNS();
+		if (snss != null) {
+			try {
+				dataOutputStream.writeInt(1004);
+				objectOutputStream.writeObject(snss);
+				for(int i=0; i<snss.size(); i++) {
+					debug.Debug.log("¼­¹ö À±Àç snss writer = " + snss.get(i).getWriter() + " msg = " + snss.get(i).getMsg());
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		while (true) {
 			int roomId;
 			String buffers[];
@@ -184,7 +198,14 @@ public class ResponseServer extends Thread {
 					if(requestServer != null && partnerServer != null)
 						server.addSession(new Session(server, requestServer, partnerServer));
 					break;
+				case Protocol.SNS_REQUEST:
+					SNS sns = (SNS) objectInputStream.readObject();
+					server.getSNSManager().addSNS(sns);
+					server.SNSbroadcastProtocol(Protocol.SNS_RESPONSE);
+					System.out.println("À±Àç ¼­¹ö SNS_REQUEST : " + sns.toString());
+					break;
 				}
+				
 			} catch (IOException e) {
 				close();
 				return;
@@ -217,6 +238,18 @@ public class ResponseServer extends Thread {
 			dataOutputStream.writeUTF(msg);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void SNSbroadcastProtocol(int protocol) {
+		try {
+			dataOutputStream.writeInt(protocol);
+			dataOutputStream.writeInt(1000);
+			Vector<SNS> snss = new Vector<SNS>(server.getSNSManager().getSNS());
+			objectOutputStream.writeObject(snss);
+			debug.Debug.log("SNSbroadcastProtocol snss size!!!! = " + snss.size());
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
