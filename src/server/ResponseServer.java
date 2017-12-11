@@ -14,6 +14,7 @@ import chat.ChatRoom;
 import database.UserInfo;
 import database.Users;
 import protocol.Protocol;
+import session.Calling;
 import session.Session;
 import sns.SNS;
 
@@ -34,6 +35,7 @@ public class ResponseServer extends Thread {
 
 	private String buffers[];
 	private String ids[];
+	private Calling calling = null;
 
 	public ResponseServer(Socket socket, Server server) {
 		this.socket = socket;
@@ -107,6 +109,7 @@ public class ResponseServer extends Thread {
 		while (true) {
 			int roomId;
 			String buffers[];
+			
 			try {
 				protocol = dataInputStream.readInt();
 				debug.Debug.log("ResponseServer  id : " + id + "  Get : " + Integer.toString(protocol));
@@ -195,8 +198,16 @@ public class ResponseServer extends Thread {
 					String partner = dataInputStream.readUTF();
 					ResponseServer requestServer = server.getResponseServer(id);
 					ResponseServer partnerServer = server.getResponseServer(partner);
-					if(requestServer != null && partnerServer != null)
-						server.addSession(new Session(server, requestServer, partnerServer));
+					calling = new Calling(server, requestServer, partnerServer);
+					server.addCalls(id+","+partner, calling);
+//					if(requestServer != null && partnerServer != null)
+//						server.addSession(new Session(server, requestServer, partnerServer));
+					break;
+				case Protocol.CALLING_OK:
+					if(calling == null)
+						System.out.println("asdfdd"+this.getName());
+					Calling tmpcall = server.getCalls(id);
+					tmpcall.run();
 					break;
 				case Protocol.SNS_REQUEST:
 					SNS sns = (SNS) objectInputStream.readObject();
@@ -204,6 +215,10 @@ public class ResponseServer extends Thread {
 					server.SNSbroadcastProtocol(Protocol.SNS_RESPONSE);
 					System.out.println("À±Àç ¼­¹ö SNS_REQUEST : " + sns.toString());
 					break;
+				case Protocol.CALL_DISCONNECT:
+					String disId = dataInputStream.readUTF();
+					Session session = server.getSession(this);
+					session.removeUser(this);
 				}
 				
 			} catch (IOException e) {
@@ -354,6 +369,10 @@ public class ResponseServer extends Thread {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}		
+	}
+	
+	public Calling getCalling() {
+		return calling;
 	}
 
 }

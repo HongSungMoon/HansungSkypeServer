@@ -8,12 +8,15 @@ import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Vector;
 
 import chat.ChatRoom;
 import chat.ChatRoomManager;
 import database.UserInfo;
 import database.Users;
+import session.Calling;
 import session.Session;
 import sns.SNS;
 import sns.SNSManager;
@@ -31,6 +34,7 @@ public class Server extends Thread {
 	private ChatRoomManager chatRoomManager = null;
 	private Vector<Session> sessions = null;
 	private SNSManager snsManager = null;
+	private HashMap<String, Calling> calls;
 
 	public Server() { 
 
@@ -38,6 +42,7 @@ public class Server extends Thread {
 		responseServers = new Vector<ResponseServer>();
 		chatRoomManager = new ChatRoomManager(this);
 		sessions = new Vector<Session>();
+		calls = new HashMap<String, Calling>();
 		snsManager = new SNSManager(this);
 		listenerInit();
 
@@ -160,11 +165,34 @@ public class Server extends Thread {
 		}
 	}
 	
+	public Session getSession(ResponseServer responseServer) {
+		for(int i=0; i<sessions.size(); i++) {
+			if(sessions.get(i).containUser(responseServer) != null)
+				return sessions.get(i);
+		}
+		return null;
+	}
+	
 	public SNSManager getSNSManager() {
 		return snsManager;
 	}
 	public Vector<SNS> getListSNS() {
 		return snsManager.getSNS();
+	}
+	
+	public void addCalls(String ids, Calling calling) {
+		calls.put(ids, calling);
+	}
+	
+	public Calling getCalls(String id) {
+		Iterator<String> keys = calls.keySet().iterator();
+        while( keys.hasNext() ){
+            String key = keys.next();
+            if(key.contains(id)) {
+            	return calls.get(key);
+            }
+        }
+        return null;
 	}
 	
 }
