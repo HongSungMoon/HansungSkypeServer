@@ -28,7 +28,7 @@ public class Session {
 		user1.dataOutputStreamWriteInt(Protocol.CALL_RESPONSE);
 		user1.dataOutputStreamWriteInt(ports.get(0));
 		user1.dataOutputStreamWriteInt(ports.get(1));
-		user1.objectOutputStreamWriteInt(responseServers.get(0).getUserAddress());
+		user1.objectOutputStreamWriteInt(responseServers.get(1).getUserAddress());
 		user2.dataOutputStreamWriteInt(Protocol.CALL_RESPONSE);
 		user2.dataOutputStreamWriteInt(ports.get(1));
 		user2.dataOutputStreamWriteInt(ports.get(0));
