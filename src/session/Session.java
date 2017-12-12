@@ -9,13 +9,13 @@ import server.ResponseServer;
 import server.Server;
 
 public class Session {
-	
+
 	private final int startPort = 9001;
 	private Vector<ResponseServer> responseServers;
 	private Vector<Integer> ports;
 	private int nextPort;
 	private Server server;
-	
+
 	public Session(Server server, ResponseServer user1, ResponseServer user2) {
 		this.server = server;
 		nextPort = startPort;
@@ -34,60 +34,62 @@ public class Session {
 		user2.dataOutputStreamWriteInt(ports.get(0));
 		user2.objectOutputStreamWriteInt(responseServers.get(0).getUserAddress());
 	}
-	
+
 	public void addUser(ResponseServer user) {
 		user.dataOutputStreamWriteInt(Protocol.CALL_ADD_RESPONSE);
-		user.dataOutputStreamWriteInt(nextPort + 1);
+		user.dataOutputStreamWriteInt(nextPort);
 		user.dataOutputStreamWriteInt(responseServers.size());
-		for(int i=0; i<responseServers.size(); i++)
+		for (int i = 0; i < responseServers.size(); i++)
 			user.objectOutputStreamWriteInt(responseServers.get(i).getUserAddress());
 		responseServers.add(user);
-		ports.add(nextPort++);
-		for(int i=0; i<responseServers.size(); i++) {
+		ports.add(nextPort);
+		for (int i = 0; i < responseServers.size(); i++) {
 			responseServers.get(i).dataOutputStreamWriteInt(Protocol.CALL_ADD);
 			responseServers.get(i).dataOutputStreamWriteInt(nextPort);
 			responseServers.get(i).objectOutputStreamWriteInt(user.getUserAddress());
 		}
-
+		nextPort++;
 	}
-	
+
 	public void removeUser(ResponseServer user) {
-		for(int i=0; i<responseServers.size(); i++) {
-			if(!responseServers.get(i).getUserId().equals(user.getUserId())) {
-				responseServers.get(i).dataOutputStreamWriteInt(Protocol.CALL_DISCONNECT);
-				responseServers.get(i).objectOutputStreamWriteInt(user.getUserAddress());
-				responseServers.get(i).dataOutputStreamWriteInt(ports.get(i));
+		if (responseServers.size() < 3)
+			removeSession();
+		else {
+			for (int i = 0; i < responseServers.size(); i++) {
+				if (!responseServers.get(i).getUserId().equals(user.getUserId())) {
+					responseServers.get(i).dataOutputStreamWriteInt(Protocol.CALL_DISCONNECT);
+					responseServers.get(i).objectOutputStreamWriteInt(user.getUserAddress());
+					responseServers.get(i).dataOutputStreamWriteInt(ports.get(i));
+				}
 			}
-		}
-		for(int i=0; i<responseServers.size(); i++) {
-			if(responseServers.get(i).getUserId().equals(user.getUserId())) {
+			for (int i = 0; i < responseServers.size(); i++) {
+				if (responseServers.get(i).getUserId().equals(user.getUserId())) {
 					responseServers.remove(i);
 					ports.remove(i);
+				}
 			}
 		}
-		if(responseServers.size() < 2)
-			removeSession();
 	}
-	
+
 	public Session containUser(ResponseServer responseServer) {
-		if(responseServers.contains(responseServer))
+		if (responseServers.contains(responseServer))
 			return this;
 		return null;
 	}
-	
+
 	public boolean isSession(ResponseServer responseServer) {
-		for(int i=0; i<responseServers.size(); i++) {
-			if(responseServers.get(i).equals(responseServer))
+		for (int i = 0; i < responseServers.size(); i++) {
+			if (responseServers.get(i).equals(responseServer))
 				return true;
 		}
 		return false;
 	}
-	
+
 	public void removeSession() {
-		for(int i=0; i<responseServers.size(); i++) {
+		for (int i = 0; i < responseServers.size(); i++) {
 			responseServers.get(i).dataOutputStreamWriteInt(Protocol.CALL_END);
 		}
 		server.removeSession(this);
 	}
-	
+
 }
