@@ -53,6 +53,13 @@ public class Session {
 	
 	public void removeUser(ResponseServer user) {
 		for(int i=0; i<responseServers.size(); i++) {
+			if(!responseServers.get(i).getUserId().equals(user.getUserId())) {
+				responseServers.get(i).dataOutputStreamWriteInt(Protocol.CALL_DISCONNECT);
+				responseServers.get(i).objectOutputStreamWriteInt(user.getUserAddress());
+				responseServers.get(i).dataOutputStreamWriteInt(ports.get(i));
+			}
+		}
+		for(int i=0; i<responseServers.size(); i++) {
 			if(responseServers.get(i).getUserId().equals(user.getUserId())) {
 					responseServers.remove(i);
 					ports.remove(i);
@@ -78,7 +85,7 @@ public class Session {
 	
 	public void removeSession() {
 		for(int i=0; i<responseServers.size(); i++) {
-			responseServers.get(i).dataOutputStreamWriteInt(Protocol.CALL_DISCONNECT);
+			responseServers.get(i).dataOutputStreamWriteInt(Protocol.CALL_END);
 		}
 		server.removeSession(this);
 	}
