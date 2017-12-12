@@ -209,6 +209,11 @@ public class ResponseServer extends Thread {
 					Calling tmpcall = server.getCalls(id);
 					tmpcall.run();
 					break;
+				case Protocol.CALL_ADD_REQUEST:
+					String patnerId = dataInputStream.readUTF();
+					Session s = server.getSession(this);
+					s.addUser(server.getResponseServer(patnerId));
+					break;
 				case Protocol.SNS_REQUEST:
 					SNS sns = (SNS) objectInputStream.readObject();
 					server.getSNSManager().addSNS(sns);

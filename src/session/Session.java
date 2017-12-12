@@ -36,6 +36,13 @@ public class Session {
 	}
 	
 	public void addUser(ResponseServer user) {
+		int count = 0;
+		for(int i=0; i<responseServers.size(); i++) {
+			responseServers.get(i).dataOutputStreamWriteInt(Protocol.CALL_ADD_RESPONSE);
+			responseServers.get(i).dataOutputStreamWriteInt(nextPort + 1);
+			responseServers.get(i).objectOutputStreamWriteInt(user.getUserAddress());
+			count++;
+		}
 		responseServers.add(user);
 		ports.add(nextPort++);
 	}
