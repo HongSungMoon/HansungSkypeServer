@@ -36,15 +36,19 @@ public class Session {
 	}
 	
 	public void addUser(ResponseServer user) {
-		int count = 0;
-		for(int i=0; i<responseServers.size(); i++) {
-			responseServers.get(i).dataOutputStreamWriteInt(Protocol.CALL_ADD_RESPONSE);
-			responseServers.get(i).dataOutputStreamWriteInt(nextPort + 1);
-			responseServers.get(i).objectOutputStreamWriteInt(user.getUserAddress());
-			count++;
-		}
+		user.dataOutputStreamWriteInt(Protocol.CALL_ADD_RESPONSE);
+		user.dataOutputStreamWriteInt(nextPort + 1);
+		user.dataOutputStreamWriteInt(responseServers.size());
+		for(int i=0; i<responseServers.size(); i++)
+			user.objectOutputStreamWriteInt(responseServers.get(i).getUserAddress());
 		responseServers.add(user);
 		ports.add(nextPort++);
+		for(int i=0; i<responseServers.size(); i++) {
+			responseServers.get(i).dataOutputStreamWriteInt(Protocol.CALL_ADD);
+			responseServers.get(i).dataOutputStreamWriteInt(nextPort);
+			responseServers.get(i).objectOutputStreamWriteInt(user.getUserAddress());
+		}
+
 	}
 	
 	public void removeUser(ResponseServer user) {
